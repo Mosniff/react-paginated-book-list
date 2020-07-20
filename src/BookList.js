@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import api from './api/api';
-
+import { useHistory, useLocation } from 'react-router-dom';
 import {
   Container,
   Jumbotron,
@@ -9,14 +8,29 @@ import {
   Col,
   Button
 } from 'react-bootstrap';
+import queryString from 'query-string';
+
+import api from './api/api';
 
 const BookList = () => {
+  const location = useLocation();
+  const history = useHistory();
+  const path = window.location.pathname;
+  const queryStringNumber = Number(queryString.parse(location.search).page);
+  const initialPageNumber = (queryStringNumber > 0) ? queryStringNumber : 1;
+
   const [data, setData] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(initialPageNumber);
 
   useEffect(() => {
     api.books.apiBooks({ page: currentPage }).then(response => setData(response));
-  });
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (currentPage > 0) {
+      history.push(`${path}?page=${currentPage}`);
+    }
+  }, [currentPage, history, path]);
 
   return (
     <Container>
