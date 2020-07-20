@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import api from './api/api';
 
-import Container from 'react-bootstrap/Container';
+import {
+  Container,
+  Jumbotron,
+  Card
+} from 'react-bootstrap';
 
 const BookList = () => {
   const [data, setData] = useState(null);
@@ -11,7 +15,25 @@ const BookList = () => {
   });
 
   return (
-    <Container></Container>
+    <Container>
+      <Jumbotron>
+        <h1 className="h1 text-center">Book List</h1>
+      </Jumbotron>
+      {data
+          ? data.items.books.map(book => (
+              <Card>
+                <Card.Body>
+                < Card.Title>{book.book_title}</Card.Title>
+                  <p>Book author: {book.book_author}</p>
+                  <p>Book pages: {book.book_pages}</p>
+                  <p>Publication year: {book.book_publication_year}</p>
+                  <p>Publication country: {book.book_publication_country}</p>
+                  <p>Publication city: {book.book_publication_city}</p>
+                </Card.Body>
+              </Card>
+          )
+        ) : null}
+    </Container>
   )
 }
 
