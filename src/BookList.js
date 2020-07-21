@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
   Container,
@@ -11,6 +11,7 @@ import {
 import queryString from 'query-string';
 
 import api from './api/api';
+import SearchBar from './SearchBar';
 
 const BookList = () => {
   const location = useLocation();
@@ -21,10 +22,16 @@ const BookList = () => {
 
   const [data, setData] = useState(null);
   const [currentPage, setCurrentPage] = useState(initialPageNumber);
+  const [searchedTerm, setSearchedTerm] = useState('');
+  const [searched, setSearched] = useState(false);
 
   useEffect(() => {
-    api.books.apiBooks({ page: currentPage }).then(response => setData(response));
-  }, [currentPage]);
+    api.books.apiBooks({
+      page: currentPage,
+      itemsPerPage: 20,
+      filters: [{ type: 'all', values: [searchedTerm] }]
+    }).then(response => setData(response));
+  }, [currentPage, searched]);
 
   useEffect(() => {
     if (currentPage > 0) {
@@ -32,12 +39,38 @@ const BookList = () => {
     }
   }, [currentPage, history, path]);
 
+
+  const handleSearchedInputChange = useCallback(
+    searchInputValue => {
+      setSearchedTerm(searchInputValue);
+    },
+    [searchedTerm]
+  );
+
+  const searchSubmit = useCallback(
+    event => {
+      event.preventDefault();
+      setCurrentPage(1);
+      setSearched(true);
+    },
+    [searchedTerm]
+  );
+
   return (
     <Container>
       <Jumbotron>
         <h1 className="h1 text-center">Book List</h1>
         <h3 className="h3 text-center">Page {currentPage}</h3>
       </Jumbotron>
+      <Row>
+        <Col xs="12" className="mb-4">
+          <SearchBar
+            buttonDisabled={!searchedTerm}
+            handleSubmit={e => searchSubmit(e)}
+            onInputChange={(value) => handleSearchedInputChange(value)}
+          />
+        </Col>
+      </Row>
       <Row>
         <Col xs="12" className="d-flex justify-content-end">
           <Button
