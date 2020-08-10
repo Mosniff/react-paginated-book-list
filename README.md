@@ -1,3 +1,6 @@
+Short practice project to query an external api and display a paginated list of returned books, with search functionality. 
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
